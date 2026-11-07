@@ -1,0 +1,10 @@
+{
+  "realm": "heladeria-realm",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      { "name": "ROLE_ADMIN_LOGISTICA", "description": "Gestión total y planificación" },
+      { "name": "ROLE_CHOFER", "description": "Consulta de ruta" }
+    ]
+  }
+}

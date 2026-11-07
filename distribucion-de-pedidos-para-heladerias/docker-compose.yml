@@ -1,0 +1,43 @@
+# Fase 1 - Infraestructura de soporte (Modo Híbrido Diario).
+# Uso: docker compose up -d postgres-db keycloak
+# Los microservicios se agregarán en fases posteriores (Modo Integración Final).
+services:
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - heladeria-net
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.5
+    container_name: keycloak
+    command: start-dev --import-realm
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak/heladeria-realm.json:/opt/keycloak/data/import/heladeria-realm.json:ro
+    networks:
+      - heladeria-net
+
+volumes:
+  postgres-data:
+
+networks:
+  heladeria-net:
+    driver: bridge
